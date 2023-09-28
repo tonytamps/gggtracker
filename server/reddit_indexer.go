@@ -37,11 +37,12 @@ func (indexer *RedditIndexer) run() {
 	log.Info("starting reddit indexer")
 
 	users := []string{
-		"chris_wilson", "Bex_GGG", "Negitivefrags", "Omnitect", "qarldev", "BrianWeissman_GGG",
-		"Mark_GGG", "RhysGGG", "Dan_GGG", "Rory_Rackham", "Blake_GGG", "Fitzy_GGG", "Hartlin_GGG",
-		"Hrishi_GGG", "Baltic_GGG", "KamilOrmanJanowski", "Daniel_GGG", "Jeff_GGG", "NapfelGGG",
-		"Baltic_GGG", "Novynn", "Felipe_GGG", "Mel_GGG", "Sarah_GGG", "riandrake", "Kieren_GGG",
- 		"Openarl", "Natalia_GGG", "pantherNZ", "Stacey_GGG",
+		"chris_wilson", "Bex_GGG", "Negitivefrags", "Omnitect", "Mark_GGG", "RhysGGG", "Dan_GGG",
+		"Rory_Rackham", "Blake_GGG", "Fitzy_GGG", "Hartlin_GGG", "Hrishi_GGG", "Baltic_GGG",
+		"KamilOrmanJanowski", "Daniel_GGG", "Jeff_GGG", "NapfelGGG", "Baltic_GGG", "Novynn",
+		"Felipe_GGG", "Mel_GGG", "Sarah_GGG", "riandrake", "Kieren_GGG", "Openarl", "Natalia_GGG",
+		"AlexDenfordGGG", "Stacey_GGG", "ZaccieA", "viperesque", "rach_ggg", "Community_Team",
+		"M59Gar", "Dominic_GGG", "Nick_GGG",
 	}
 	next := 0
 
@@ -82,6 +83,7 @@ func ParseRedditActivity(b []byte) ([]Activity, string, error) {
 					CreatedUTC   float64 `json:"created_utc"`
 					LinkId       string  `json:"link_id"`
 					LinkTitle    string  `json:"link_title"`
+					Subreddit    string  `json:"subreddit"`
 				} `json:"data"`
 			} `json:"children"`
 		} `json:"data"`
@@ -92,7 +94,7 @@ func ParseRedditActivity(b []byte) ([]Activity, string, error) {
 	}
 
 	for _, thing := range root.Data.Children {
-		if thing.Data.SubredditId != "t5_2sf6m" {
+		if thing.Data.SubredditId != "t5_2sf6m" && thing.Data.SubredditId != "t5_2w3q8" {
 			continue
 		}
 		switch thing.Kind {
@@ -104,6 +106,7 @@ func ParseRedditActivity(b []byte) ([]Activity, string, error) {
 				PostId:    strings.TrimPrefix(thing.Data.LinkId, "t3_"),
 				PostTitle: thing.Data.LinkTitle,
 				Time:      time.Unix(int64(thing.Data.CreatedUTC), 0),
+				Subreddit: thing.Data.Subreddit,
 			})
 		case "t3":
 			activity = append(activity, &RedditPost{
@@ -114,6 +117,7 @@ func ParseRedditActivity(b []byte) ([]Activity, string, error) {
 				Title:     thing.Data.Title,
 				URL:       thing.Data.URL,
 				Time:      time.Unix(int64(thing.Data.CreatedUTC), 0),
+				Subreddit: thing.Data.Subreddit,
 			})
 		}
 	}
@@ -162,7 +166,7 @@ func (indexer *RedditIndexer) index(user string) error {
 			logger.WithError(err).Error("error requesting reddit activity")
 		}
 
-		done := len(things) == 0
+		done := len(things) == 0 || next == ""
 		for _, thing := range things {
 			if thing.ActivityTime().Before(pageCutoff) {
 				done = true

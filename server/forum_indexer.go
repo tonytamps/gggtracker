@@ -16,6 +16,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const UserAgent = "gggtracker.com (github.com/ccbrown/gggtracker)"
+
 type ForumIndexer struct {
 	configuration ForumIndexerConfiguration
 	closeSignal   chan struct{}
@@ -43,7 +45,7 @@ func (indexer *ForumIndexer) run() {
 	log.Info("starting forum indexer")
 
 	accounts := []string{
-		"Chris", "Jonathan", "Erik", "Mark_GGG", "Samantha", "Rory", "Rhys", "Qarl", "Andrew_GGG",
+		"Chris", "Jonathan", "Erik", "Mark_GGG", "Samantha", "Rory", "Rhys", "Andrew_GGG",
 		"Damien_GGG", "Joel_GGG", "Ari", "Thomas", "BrianWeissman", "Edwin_GGG", "Support", "Dylan",
 		"MaxS", "Ammon_GGG", "Jess_GGG", "Robbie_GGG", "GGG_Neon", "Jason_GGG", "Henry_GGG",
 		"Michael_GGG", "Bex_GGG", "Cagan_GGG", "Daniel_GGG", "Kieren_GGG", "Yeran_GGG", "Gary_GGG",
@@ -52,7 +54,9 @@ func (indexer *ForumIndexer) run() {
 		"Fitzy_GGG", "Hartlin_GGG", "Jake_GGG", "Lionel_GGG", "Melissa_GGG", "MikeP_GGG", "Novynn",
 		"Rachel_GGG", "Rob_GGG", "Roman_GGG", "Sarah_GGG", "SarahB_GGG", "Tom_GGG", "Natalia_GGG",
 		"Jeff_GGG", "Lu_GGG", "JuliaS_GGG", "Alexander_GGG", "SamC_GGG", "AndrewE_GGG", "Kyle_GGG",
-		"Stacey_GGG", "Jatin_GGG",
+		"Stacey_GGG", "Jatin_GGG", "Yolandi_GGG", "Community_Team", "Dominic_GGG", "Nick_GGG",
+		"Guy_GGG", "Ben_GGG", "BenH_GGG", "Nav_GGG", "Will_GGG", "Scott_GGG", "JC_GGG", "Dylan_GGG",
+		"Chulainn_GGG",
 	}
 
 	timezone := (*time.Location)(nil)
@@ -118,7 +122,14 @@ func (indexer *ForumIndexer) requestDocument(resource string) (*goquery.Document
 		Jar:     jar,
 		Timeout: time.Second * 10,
 	}
-	resp, err := client.Get(urlString)
+
+	req, err := http.NewRequest("GET", urlString, nil)
+	req.Header.Set("User-Agent", UserAgent)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +147,7 @@ func ScrapeForumPosts(doc *goquery.Document, timezone *time.Location) ([]*ForumP
 
 	err := error(nil)
 
-	doc.Find(".forumPostListTable tr").EachWithBreak(func(i int, sel *goquery.Selection) bool {
+	doc.Find(".forumPostListTable > tbody > tr").EachWithBreak(func(i int, sel *goquery.Selection) bool {
 		post := &ForumPost{
 			Poster: sel.Find(".post_by_account").Text(),
 		}
