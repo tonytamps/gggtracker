@@ -41,22 +41,107 @@ func (indexer *ForumIndexer) Close() {
 	close(indexer.closeSignal)
 }
 
+type ForumAccount struct {
+	Username      string
+	Discriminator int
+}
+
 func (indexer *ForumIndexer) run() {
 	log.Info("starting forum indexer")
 
-	accounts := []string{
-		"Chris", "Jonathan", "Erik", "Mark_GGG", "Samantha", "Rory", "Rhys", "Andrew_GGG",
-		"Damien_GGG", "Joel_GGG", "Ari", "Thomas", "BrianWeissman", "Edwin_GGG", "Support", "Dylan",
-		"MaxS", "Ammon_GGG", "Jess_GGG", "Robbie_GGG", "GGG_Neon", "Jason_GGG", "Henry_GGG",
-		"Michael_GGG", "Bex_GGG", "Cagan_GGG", "Daniel_GGG", "Kieren_GGG", "Yeran_GGG", "Gary_GGG",
-		"Dan_GGG", "Jared_GGG", "Brian_GGG", "RobbieL_GGG", "Arthur_GGG", "NickK_GGG", "Felipe_GGG",
-		"Alex_GGG", "Alexcc_GGG", "Andy", "CJ_GGG", "Eben_GGG", "Emma_GGG", "Ethan_GGG",
-		"Fitzy_GGG", "Hartlin_GGG", "Jake_GGG", "Lionel_GGG", "Melissa_GGG", "MikeP_GGG", "Novynn",
-		"Rachel_GGG", "Rob_GGG", "Roman_GGG", "Sarah_GGG", "SarahB_GGG", "Tom_GGG", "Natalia_GGG",
-		"Jeff_GGG", "Lu_GGG", "JuliaS_GGG", "Alexander_GGG", "SamC_GGG", "AndrewE_GGG", "Kyle_GGG",
-		"Stacey_GGG", "Jatin_GGG", "Yolandi_GGG", "Community_Team", "Dominic_GGG", "Nick_GGG",
-		"Guy_GGG", "Ben_GGG", "BenH_GGG", "Nav_GGG", "Will_GGG", "Scott_GGG", "JC_GGG", "Dylan_GGG",
-		"Chulainn_GGG",
+	accounts := []ForumAccount{
+		{Username: "Chris"},
+		{Username: "Jonathan"},
+		{Username: "Mark_GGG"},
+		{Username: "Rory"},
+		{Username: "Rhys"},
+		{Username: "Joel_GGG"},
+		{Username: "Ari"},
+		{Username: "Thomas"},
+		{Username: "Support"},
+		{Username: "Jess_GGG"},
+		{Username: "Robbie_GGG"},
+		{Username: "GGG_Neon"},
+		{Username: "Jason_GGG"},
+		{Username: "Henry_GGG"},
+		{Username: "Michael_GGG"},
+		{Username: "Bex_GGG"},
+		{Username: "Cagan_GGG"},
+		{Username: "Kieren_GGG"},
+		{Username: "Yeran_GGG"},
+		{Username: "Gary_GGG"},
+		{Username: "Dan_GGG"},
+		{Username: "Jared_GGG"},
+		{Username: "Brian_GGG"},
+		{Username: "RobbieL_GGG"},
+		{Username: "Arthur_GGG"},
+		{Username: "NickK_GGG"},
+		{Username: "Felipe_GGG"},
+		{Username: "Alex_GGG"},
+		{Username: "Alexcc_GGG"},
+		{Username: "CJ_GGG"},
+		{Username: "Eben_GGG"},
+		{Username: "Emma_GGG"},
+		{Username: "Ethan_GGG"},
+		{Username: "Fitzy_GGG"},
+		{Username: "Hartlin_GGG"},
+		{Username: "Jake_GGG"},
+		{Username: "Melissa_GGG"},
+		{Username: "MikeP_GGG"},
+		{Username: "Novynn"},
+		{Username: "Rob_GGG"},
+		{Username: "Roman_GGG"},
+		{Username: "Tom_GGG"},
+		{Username: "Natalia_GGG"},
+		{Username: "Jeff_GGG"},
+		{Username: "Lu_GGG"},
+		{Username: "JuliaS_GGG"},
+		{Username: "Alexander_GGG"},
+		{Username: "SamC_GGG"},
+		{Username: "AndrewE_GGG"},
+		{Username: "Kyle_GGG"},
+		{Username: "Stacey_GGG"},
+		{Username: "Jatin_GGG"},
+		{Username: "Community_Team"},
+		{Username: "Nick_GGG"},
+		{Username: "Guy_GGG"},
+		{Username: "Ben_GGG"},
+		{Username: "BenH_GGG"},
+		{Username: "Nav_GGG"},
+		{Username: "Will_GGG"},
+		{Username: "Scott_GGG"},
+		{Username: "JC_GGG"},
+		{Username: "Dylan_GGG"},
+		{Username: "Chulainn_GGG"},
+		{Username: "Vash_GGG"},
+		{Username: "Cameron_GGG"},
+		{Username: "Jacob_GGG"},
+		{Username: "Jenn_GGG"},
+		{Username: "CoryA_GGG"},
+		{Username: "Sian_GGG"},
+		{Username: "Drew_GGG"},
+		{Username: "Lisa_GGG"},
+		{Username: "ThomasK_GGG"},
+		{Username: "Whai_GGG"},
+		{Username: "Scopey"},
+		{Username: "Adam_GGG"},
+		{Username: "Nichelle_GGG"},
+		{Username: "Markus_GGG"},
+		{Username: "Jarod_GGG"},
+		{Username: "Joel_GGG", Discriminator: 1496},
+		{Username: "Vinky_GGG"},
+		{Username: "Edmund_GGG", Discriminator: 4844},
+		{Username: "Clint"},
+		{Username: "LeightonJ_GGG"},
+		{Username: "Tai_GGG"},
+		{Username: "ShaunB_GGG"},
+		{Username: "Ayelen_GGG"},
+		{Username: "Timothy_GGG"},
+		{Username: "BenMH_GGG"},
+		{Username: "Ian_GGG"},
+		{Username: "EthanH_GGG"},
+		{Username: "Yrone_GGG", Discriminator: 9576},
+		{Username: "Sam_GGG", Discriminator: 2420},
 	}
 
 	timezone := (*time.Location)(nil)
@@ -98,7 +183,12 @@ func (indexer *ForumIndexer) run() {
 				return
 			default:
 				if err := indexer.index(account, timezone); err != nil {
-					log.WithError(err).Error("error indexing forum account: " + account)
+					if errors.Is(err, ErrForumMaintenance) {
+						log.Info("forum is under maintenance")
+						time.Sleep(30 * time.Second)
+					} else {
+						log.WithError(err).Error("error indexing forum account: " + account.Username)
+					}
 				}
 				time.Sleep(time.Second)
 			}
@@ -142,14 +232,25 @@ var postURLExpression = regexp.MustCompile("^/forum/view-post/([0-9]+)")
 var threadURLExpression = regexp.MustCompile("^/forum/view-thread/([0-9]+)")
 var forumURLExpression = regexp.MustCompile("^/forum/view-forum/([0-9]+)")
 
-func ScrapeForumPosts(doc *goquery.Document, timezone *time.Location) ([]*ForumPost, error) {
+var ErrForumMaintenance = errors.New("forum is in maintenance")
+
+func ScrapeForumPosts(doc *goquery.Document, poster ForumAccount, timezone *time.Location) ([]*ForumPost, error) {
 	posts := []*ForumPost(nil)
 
 	err := error(nil)
 
+	if doc.Find(".forumPostListTable").Length() == 0 {
+		err = errors.New("forum post list not found")
+		if topBar := doc.Find(".topBar"); topBar.Length() == 1 && topBar.Text() == "Down For Maintenance" {
+			err = ErrForumMaintenance
+		}
+		return nil, err
+	}
+
 	doc.Find(".forumPostListTable > tbody > tr").EachWithBreak(func(i int, sel *goquery.Selection) bool {
 		post := &ForumPost{
-			Poster: sel.Find(".post_by_account").Text(),
+			Poster:              poster.Username,
+			PosterDiscriminator: poster.Discriminator,
 		}
 
 		body, err := sel.Find(".content").Html()
@@ -192,19 +293,19 @@ func ScrapeForumPosts(doc *goquery.Document, timezone *time.Location) ([]*ForumP
 	return posts, nil
 }
 
-func (indexer *ForumIndexer) forumPosts(poster string, page int, timezone *time.Location) ([]*ForumPost, error) {
-	doc, err := indexer.requestDocument(fmt.Sprintf("/account/view-posts/%v/page/%v", poster, page))
+func (indexer *ForumIndexer) forumPosts(poster ForumAccount, page int, timezone *time.Location) ([]*ForumPost, error) {
+	doc, err := indexer.requestDocument(fmt.Sprintf("/account/view-posts/%v-%04d/page/%v", poster.Username, poster.Discriminator, page))
 	if err != nil {
 		return nil, err
 	}
-	posts, err := ScrapeForumPosts(doc, timezone)
+	posts, err := ScrapeForumPosts(doc, poster, timezone)
 	if err != nil {
 		return nil, err
 	}
 	return posts, nil
 }
 
-func (indexer *ForumIndexer) index(poster string, timezone *time.Location) error {
+func (indexer *ForumIndexer) index(poster ForumAccount, timezone *time.Location) error {
 	logger := log.WithFields(log.Fields{
 		"poster": poster,
 	})
@@ -216,7 +317,7 @@ func (indexer *ForumIndexer) index(poster string, timezone *time.Location) error
 	for page := 1; ; page++ {
 		posts, err := indexer.forumPosts(poster, page, timezone)
 		if err != nil {
-			logger.WithError(err).Error("error requesting forum posts")
+			return fmt.Errorf("error getting forum posts: %w", err)
 		}
 
 		done := len(posts) == 0

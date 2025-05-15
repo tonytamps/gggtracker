@@ -11,22 +11,19 @@ var index = `<!DOCTYPE html><html>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <title>GGG Tracker</title>
     <link rel="shortcut icon" href="static/favicon.ico" />
-    <link rel="stylesheet" type="text/css" href="static/style.css?v5" />
+    <link rel="stylesheet" type="text/css" href="static/style.css?v7" />
     <link rel="alternate" type="application/rss+xml" title="GGG Tracker Forum Feed" href="rss" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
 	{{if .Configuration.GoogleAnalytics}}
-    <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', '{{.Configuration.GoogleAnalytics}}']);
-    _gaq.push(['_trackPageview']);
+	<script async src="https://www.googletagmanager.com/gtag/js?id={{.Configuration.GoogleAnalytics}}"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
 
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
+		gtag('config', '{{.Configuration.GoogleAnalytics}}');
     </script>
 	{{end}}
 </head>
@@ -42,6 +39,12 @@ var index = `<!DOCTYPE html><html>
 		</header>
         <div class="content-box">
             <h1>{{call $.Translate "Activity"}}</h1>
+			{{if ne $.Locale.HelpForumId 0}}
+            <div id="help-toggle">
+				<a href="#" id="hide-help-forum" style="display: none;">{{call $.Translate "Hide Help Forum"}}</a>
+				<a href="#" id="show-help-forum" style="display: none;">{{call $.Translate "Show Help Forum"}}</a>
+			</div>
+			{{end}}
             <a href="rss"><img src="static/images/rss-icon-28.png" class="rss-icon" /></a>
             <table id="activity-table" class="list">
                 <thead>
@@ -65,10 +68,13 @@ var index = `<!DOCTYPE html><html>
 				Please direct feedback to <a href="https://www.pathofexile.com/forum/view-thread/69448" target="_blank">this thread</a>.
 				Want a new feature? <a href="https://github.com/ccbrown/gggtracker" target="_blank">Add it yourself!</a>
 			</p>
+			<p>
+				Appreciate the site? Show your support by <a href="https://github.com/sponsors/ccbrown" target="_blank">sponsoring me</a>! ❤️
+			</p>
         </footer>
     </div>
 
-    <script src="static/index.js?v7"></script>
+    <script src="static/index.js?v9"></script>
 </body>
 </html>`
 

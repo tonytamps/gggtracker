@@ -16,7 +16,19 @@ type jsonResponse struct {
 
 func ActivityHandler(db Database) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		activity, next, err := db.Activity(LocaleForRequest(c.Request()), c.QueryParam("next"), 50)
+		locale := LocaleForRequest(c.Request())
+		var filter func(Activity) bool
+		if c.QueryParams().Has("nohelp") && c.QueryParam("nohelp") != "false" {
+			filter = func(a Activity) bool {
+				if fp, ok := a.(*ForumPost); ok {
+					if fp.ForumId == locale.HelpForumId {
+						return false
+					}
+				}
+				return true
+			}
+		}
+		activity, next, err := db.Activity(locale, c.QueryParam("next"), 50, filter)
 		if err != nil {
 			return err
 		}
@@ -38,6 +50,7 @@ func ActivityHandler(db Database) echo.HandlerFunc {
 				Data: a,
 			})
 		}
+		c.Response().Header().Add("Cache-Control", "max-age=120")
 		return c.JSON(200, response)
 	}
 }

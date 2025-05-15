@@ -13,6 +13,7 @@ import (
 
 type RedditIndexerConfiguration struct {
 	Database Database
+	Auth     string
 }
 
 type RedditIndexer struct {
@@ -33,6 +34,8 @@ func (indexer *RedditIndexer) Close() {
 	indexer.closeSignal <- true
 }
 
+const redditRequestInterval = time.Second * 8
+
 func (indexer *RedditIndexer) run() {
 	log.Info("starting reddit indexer")
 
@@ -42,7 +45,7 @@ func (indexer *RedditIndexer) run() {
 		"KamilOrmanJanowski", "Daniel_GGG", "Jeff_GGG", "NapfelGGG", "Baltic_GGG", "Novynn",
 		"Felipe_GGG", "Mel_GGG", "Sarah_GGG", "riandrake", "Kieren_GGG", "Openarl", "Natalia_GGG",
 		"AlexDenfordGGG", "Stacey_GGG", "ZaccieA", "viperesque", "rach_ggg", "Community_Team",
-		"M59Gar", "Dominic_GGG", "Nick_GGG",
+		"M59Gar", "Dominic_GGG", "Nick_GGG", "MatthewD_GGG",
 	}
 	next := 0
 
@@ -58,7 +61,7 @@ func (indexer *RedditIndexer) run() {
 			if next >= len(users) {
 				next = 0
 			}
-			time.Sleep(time.Second * 3)
+			time.Sleep(redditRequestInterval)
 		}
 	}
 }
@@ -94,7 +97,7 @@ func ParseRedditActivity(b []byte) ([]Activity, string, error) {
 	}
 
 	for _, thing := range root.Data.Children {
-		if thing.Data.SubredditId != "t5_2sf6m" && thing.Data.SubredditId != "t5_2w3q8" {
+		if thing.Data.SubredditId != "t5_2sf6m" && thing.Data.SubredditId != "t5_2w3q8" && thing.Data.SubredditId != "t5_3910n" {
 			continue
 		}
 		switch thing.Kind {
@@ -136,6 +139,9 @@ func (indexer *RedditIndexer) redditActivity(user string, page string) ([]Activi
 		return nil, "", err
 	}
 	req.Header.Add("User-Agent", "GGG Tracker (https://github.com/ccbrown/gggtracker) by /u/rz2yoj")
+	if parts := strings.Split(indexer.configuration.Auth, ":"); len(parts) == 2 {
+		req.SetBasicAuth(parts[0], parts[1])
+	}
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -184,7 +190,7 @@ func (indexer *RedditIndexer) index(user string) error {
 		if done {
 			break
 		}
-		time.Sleep(time.Second * 3)
+		time.Sleep(redditRequestInterval)
 	}
 
 	if len(activity) == 0 {
